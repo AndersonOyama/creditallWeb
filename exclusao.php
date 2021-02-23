@@ -1,5 +1,5 @@
 <?php
-include 'conn.php';
+include 'con.php';
 ?>
 
 <!DOCTYPE html>
@@ -58,48 +58,100 @@ include 'conn.php';
 
       <label>Id do cadastro:</label>
       <input type="text" name="idNumber" required="">
-      <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalConsult">Consultar</button>
+      <input type="submit" class="button" name="consultar" value="consultar" />
 
     </form>
-
-  <script>
-    $sqli="SELECT * FROM `consumidor` WHERE `id_consumidor` = $idNumber;";
-    $result = mysqli_query($conexao, $sqli);
-    if($result->num_rows == 0){
-      echo ("Usuário inexistente");
-    }
-
-  </script>
-
-
-
-    <!-- <?php
-    if (isset($_POST['consult'])) {
-      echo "<script>$('#modalConsult').modal('show)</script>";
-    }
-    ?> -->
-
   </div>
 
-  <div id="modalConsult" class="modal fade" role="dialog">
-  <div class="modal-dialog">
 
-    <!-- Modal content-->
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">Modal Header</h4>
-      </div>
-      <div class="modal-body">
-        <p>Some text in the modal.</p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      </div><input type="submit" name="consult" id="insert" value="Consultar" class="btn btn-success" />
+  <?php
+    if (isset($_POST['consultar'])) {
+      $id = $_POST["idNumber"];
+      $sqli = "SELECT * FROM `consumidor` WHERE `id_consumidor` = '$id'";
+
+      $result = mysqli_query($conexao, $sqli);
+
+      if ($result) {
+        if (mysqli_num_rows($result) > 0) {
+          $row = mysqli_fetch_assoc($result);
+        } else {
+          echo ("Usuário inexistente");
+        }
+      } else {
+        echo "Erro: " . mysqli_error($conexao);
+      }
+    }
+    $conexao->close();
+  ?>
+
+<?php
+  $id = $_POST['idNumber'];
+  if(isset($_POST['sim'])) { 
+    global $id;
+    $sqliDel = "DELETE FROM `consumidor` WHERE `id_consumidor` = '$id' ";
+    $resultDel = mysqli_query($conexao,$sqliDel);
+    echo ($sqliDel);
+    if($resultDel){
+      echo("Usuário excluido com sucesso!");
+      echo($sqliDel);
+    } else {
+      echo("Erro ao excluir usuário");
+    }
+  } 
+  if(isset($_POST['cancelar'])) { 
+    echo "Operação cancelado"; 
+  } 
+?> 
+
+
+
+  <?php if (mysqli_num_rows($result) > 0) : ?>
+    <div container="confirmacao">
+      Cliente: <?php echo ($row['nome_consumidor']); ?>
+      <form method="post">
+        <input type="submit" name="sim" value="Sim".$_POST[$row]/>
+        <input type="submit" name="cancelar" value="Cancelar"/>
+      </form>
     </div>
+  <?php endif; ?>
 
+
+
+
+  <!--Modal inexistente-->
+
+  <div class="modal fade" id="modalInexistente" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Cliente Inexistente</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          ...
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+
+        </div>
+      </div>
+    </div>
   </div>
-</div>
+
+
+
+
+
+  <!-- <script>
+
+    $sqli = "SELECT * FROM `consumidor` WHERE `id_consumidor` = $idNumber;";
+    $result = mysqli_query($conexao, $sqli);
+    if ($result - > num_rows == 0) {
+      echo("Usuário inexistente");
+    }
+  </script> -->
 
 
 
